@@ -1,0 +1,41 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "bookmydrdb"
+  namespace: "default"
+  labels:
+    app: "bookmydrdb"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "bookmydrdb"
+  template:
+    metadata:
+      labels:
+        app: "bookmydrdb"
+    spec:
+      containers:
+      - name: "bookmydrdatabase-sha256-1"
+        image: "gcr.io/charged-ground-326209/github.com/kharatramesh/bookmydrdatabase@sha256:2731dbc0a31d85203971567ac7b9f04fd4f319d012181facb048773e947d2305"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "bookmydrdb-hpa-o7qh"
+  namespace: "default"
+  labels:
+    app: "bookmydrdb"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "bookmydrdb"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
